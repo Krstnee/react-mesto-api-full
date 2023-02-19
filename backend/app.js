@@ -1,42 +1,42 @@
+require('dotenv').config();
+const express = require('express');
 const mongoose = require('mongoose');
-
+const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
+const helmet = require('helmet');
+const cors = require('./middlewares/cors');
+const limiter = require('./utils/limiterConfig');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const routes = require('./routes');
+const handleError = require('./middlewares/handleError');
+
+const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const userBodyValidator = require('./middlewares/requestValidators/userBodyValidator');
-const routerCards = require('./routes/cards');
-const routerUsers = require('./routes/users');
-const { login } = require('./controllers/login');
-const { createUser } = require('./controllers/users');
-const auth = require('./middlewares/auth');
-const errorHandler = require('./middlewares/errorHandler');
-const cors = require('./middlewares/cors'); 
-const NotFoundError = require('./utils/errors/NotFoundError');
-
-const { PORT = 3000 } = process.env;
 const app = express();
-app.use(express.json());
-app.use(cookieParser());
 
-app.get('/crash-test', () => {
-    setTimeout(() => {
-      throw new Error('Сервер сейчас упадёт');
-    }, 0);
-  });
-
-app.post('/signin', userBodyValidator, login);
-app.post('/signup', userBodyValidator, createUser);
 app.use(cors);
-app.use(auth);
-app.use('/cards', routerCards);
-app.use('/users', routerUsers);
-app.use('*', () => { throw new NotFoundError('По вашему запросу ничего не найдено'); });
+app.use(cookieParser());
+app.use(limiter);
+app.use(helmet());
+
+app.use(express.json());
+
+// Test pm2, need to delete
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+
+app.use(requestLogger);
+
+app.use(routes);
+
+app.use(errorLogger);
 
 app.use(errors());
-app.use(errorHandler);
+app.use(handleError);
 
-app.listen(PORT, () => {
-});
+app.listen(PORT);

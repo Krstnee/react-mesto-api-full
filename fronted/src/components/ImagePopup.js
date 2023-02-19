@@ -1,34 +1,20 @@
-import closeIcon from '../images/close-icon.svg'
+function ImagePopup(props) {
 
-export default function ImagePopup(props) {
-  const { card, onClose } = props
+   const stateImgPopupClass = `popup ${props.isOpen && 'popup_opened'}`;
+   const imgSrc = `${props.card ? props.card.link : '#'}`;
+   const imgName = `${props.card ? props.card.name : ''}`;
 
-  return (
-    <div
-      className={`popup popup_type_picture-full-screen ${
-        Object.keys(card).length !== 0 && 'popup_active'
-      }`}
-      onClick={onClose}
-    >
-      <div
-        className="popup__photo-container"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          type="button"
-          aria-label="закрыть окно."
-          className="popup__close-button  responsible-fade"
-          onClick={onClose}
-        >
-          <img
-            src={closeIcon}
-            alt="Закрыть окно."
-            className="popup__close-icon"
-          />
-        </button>
-        <img src={card.link} alt={card.name} className="popup__photo" />
-        <h3 className="popup__title popup__title_type_photo">{card.name}</h3>
+   return(
+      <div id="#photo-popup" className={stateImgPopupClass} onClick={props.onCloseClick}>
+         <div className="popup__photo-container">
+            <button type="button" className="popup__close-button" onClick={props.onClose}></button>
+            <figure className="popup__figure">
+               <img src={imgSrc} className="popup__image" alt={imgName} />
+               <figcaption className="popup__caption">{imgName}</figcaption>
+            </figure>
+         </div>
       </div>
-    </div>
-  )
+   )
 }
+
+export default ImagePopup;

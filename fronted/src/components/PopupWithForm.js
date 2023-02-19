@@ -1,59 +1,21 @@
-import closeIcon from '../images/close-icon.svg'
+import React from "react";
 
-export default function PopupWithForm(props) {
-  const {
-    name,
-    title,
-    children,
-    isOpen,
-    onClose,
-    buttonText,
-    onSubmit,
-    isSaving,
-    isValid,
-  } = props
+function PopupWithForm({name, title, buttonText, ...props}) {
 
-  return (
-    <div
-      className={`popup popup_type_${name} ${isOpen && 'popup_active'}`}
-      onMouseDown={onClose}
-    >
-      <div
-        className="popup__container"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        <h3 className="popup__title">{title}</h3>
-        <form
-          className={`popup__form popup__form_type_${name}`}
-          noValidate
-          name={name}
-          onSubmit={onSubmit}
-        >
-          {children}
-          <button
-            type="submit"
-            name="edit-profile-submit-button"
-            className={`popup__submit-button
-responsible-fade responsible-fade_opacity_strong ${
-              (isSaving || !isValid) && 'popup__submit-button_inactive'
-            }`}
-          >
-            {isSaving ? 'Сохранение...' : buttonText}
-          </button>
-        </form>
-        <button
-          type="button"
-          aria-label="Отменить"
-          className="popup__close-button  responsible-fade"
-          onClick={onClose}
-        >
-          <img
-            src={closeIcon}
-            alt="Закрыть окно"
-            className="popup__close-icon"
-          />
-        </button>
+   const stateFormPopupClass = `${props.isOpen && 'popup_opened'}`;
+
+   return(
+      <div className={`popup ${stateFormPopupClass}`} onClick={props.onCloseClick}>
+         <div className="popup__container">
+         <button type="button" className="popup__close-button" onClick={props.onClose}></button>
+         <form id={props.formId} name={name} onSubmit={props.onSubmit} className="popup__form" autoComplete="off">
+            <h2 className="popup__title">{title}</h2>
+            {props.children}
+            <button type="submit" id={props.buttonId} className="popup__save-button">{buttonText}</button>
+         </form>
+         </div>
       </div>
-    </div>
-  )
+   )
 }
+
+export default PopupWithForm;

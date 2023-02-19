@@ -1,20 +1,37 @@
-const routerUsers = require('express').Router();
+const router = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
+const isUrl = require('validator/lib/isURL');
+const BadRequest = require('../errors/400-BadRequestError');
 const {
-  getAllUsers, getUserById, updateProfile, updateAvatar, getMyProfile,
+  getUsers, getSelfInfo, getUserById, profileUpdate, avatarUpdate,
 } = require('../controllers/users');
 
-const userParamsValidator = require('../middlewares/requestValidators/userParamsValidator');
-const userDataValidator = require('../middlewares/requestValidators/userDataValidator');
-const userAvatarValidator = require('../middlewares/requestValidators/userAvatarValidator');
+router.get('/', getUsers);
 
-routerUsers.get('/', getAllUsers);
+router.get('/me', getSelfInfo);
 
-routerUsers.get('/me', getMyProfile);
+router.get('/:userId', celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().hex().length(24),
+  }),
+}), getUserById);
 
-routerUsers.get('/:userId', userParamsValidator, getUserById);
+router.patch('/me', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
+  }),
+}), profileUpdate);
 
-routerUsers.patch('/me', userDataValidator, updateProfile);
+router.patch('/me/avatar', celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().required().custom((link) => {
+      if (isUrl(link, { require_protocol: true })) {
+        return link;
+      }
+      throw new BadRequest('Некорректный адрес URL');
+    }),
+  }),
+}), avatarUpdate);
 
-routerUsers.patch('/me/avatar', userAvatarValidator, updateAvatar);
-
-module.exports = routerUsers;
+module.exports = router;

@@ -1,42 +1,40 @@
-import { useEffect, useState } from 'react'
-import PopupWithForm from './PopupWithForm'
-import Input from './Input'
-import useFormAndValidation from '../hooks/useFormAndValidation'
+import { useRef, useEffect } from 'react';
+import PopupWithForm from './PopupWithForm';
 
-export default function EditAvatarPopup(props) {
-  const { isOpen, onClose, isSaving, onEditAvatar } = props
+function EditAvatarPopup(props) {
 
-  const { values, handleChange, errors, isValid, resetForm } =
-    useFormAndValidation()
+   const inputRef = useRef();
 
-  function handleEditAvatar(e) {
-    e.preventDefault()
-    onEditAvatar(values.avatarLink)
-  }
+   const buttonText = `${props.renderLoading ? 'Сохранение...' : 'Сохранить'}`;
 
-  useEffect(() => {
-    resetForm()
-  }, [isOpen])
+   const handleSubmit = (evt) => {
+      evt.preventDefault();
 
-  return (
-    <PopupWithForm
-      name="edit-avatar"
-      title="Обновить аватар"
-      isOpen={isOpen}
-      onClose={onClose}
-      buttonText="Сохранить"
-      isSaving={isSaving}
-      onSubmit={handleEditAvatar}
-      isValid={isValid}
-    >
-      <Input
-        name="avatarLink"
-        type="url"
-        placeholder="Ссылка на картинку"
-        value={values.avatarLink ? values.avatarLink : ''}
-        onChange={handleChange}
-        errorText={errors.avatarLink}
-      />
-    </PopupWithForm>
-  )
+      props.onUpdateAvatar({
+         avatar: inputRef.current.value
+      });
+   };
+
+   useEffect(() => {
+      inputRef.current.value = '';
+   }, [props.isOpen]);
+
+   return(
+      <PopupWithForm
+         isOpen={props.isOpen}
+         onClose={props.onClose}
+         onCloseClick={props.onCloseClick}
+         onSubmit={handleSubmit}
+         title={'Обновить аватар'}
+         name={'avatar-form'}
+         formId={'#avatar-update-form'}
+         buttonId={'#avatar-form-save-button'}
+         buttonText={buttonText}
+      >
+         <input ref={inputRef} className="popup__input popup__input_avatar-link" name="inputAvatarLink" type="url" placeholder="Ссылка на картинку" required/>
+         <span className="popup__input-error"></span>
+      </PopupWithForm>
+   )
 }
+
+export default EditAvatarPopup;

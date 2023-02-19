@@ -1,19 +1,41 @@
-const routerCards = require('express').Router();
+const router = require('express').Router();
+const isUrl = require('validator/lib/isURL');
+const { celebrate, Joi } = require('celebrate');
+const BadRequest = require('../errors/400-BadRequestError');
 const {
-  getAllCards, createCard, removeCardById, likeCardById, unlikeCardById,
+  getCards, createCard, deleteCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
 
-const cardBodyValidator = require('../middlewares/requestValidators/cardBodyValidator');
-const cardParamsValidator = require('../middlewares/requestValidators/cardParamsValidator');
+router.get('/', getCards);
 
-routerCards.get('/', getAllCards);
+router.post('/', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().required().custom((link) => {
+      if (isUrl(link, { require_protocol: true })) {
+        return link;
+      }
+      throw new BadRequest('Некорректный адрес URL');
+    }),
+  }),
+}), createCard);
 
-routerCards.post('/', cardBodyValidator, createCard);
+router.delete('/:cardId', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().hex().length(24),
+  }),
+}), deleteCard);
 
-routerCards.delete('/:cardId', cardParamsValidator, removeCardById);
+router.put('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().hex().length(24),
+  }),
+}), likeCard);
 
-routerCards.put('/:cardId/likes', cardParamsValidator, likeCardById);
+router.delete('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().hex().length(24),
+  }),
+}), dislikeCard);
 
-routerCards.delete('/:cardId/likes', cardParamsValidator, unlikeCardById);
-
-module.exports = routerCards;
+module.exports = router;
