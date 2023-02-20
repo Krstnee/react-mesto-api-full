@@ -119,7 +119,7 @@ class Api {
 }
 
 export default new Api({
-   url: 'http://krstne.nomoredomains.club',
+   url: 'https://krstne.nomoredomains.club',
    headers: {
       'Content-Type': 'application/json',
     },
