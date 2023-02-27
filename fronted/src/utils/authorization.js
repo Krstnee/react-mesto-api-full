@@ -71,5 +71,5 @@ class Authorization {
 }
 
 export default new Authorization({
-   url: 'http://krstne.nomoredomains.club',
+   url: 'https://krstne.nomoredomains.club',
 });

@@ -1,7 +1,7 @@
 {
   "name": "mesto-react",
   "version": "0.1.0",
-  "homepage": "https://kostolomovvyacheslav.github.io",
+  "homepage": "https://krstnee.github.io",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
@@ -20,8 +20,7 @@
     "build": "set \"GENERATE_SOURCEMAP=false\" &&  react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "scp -r ./build/* vyach_kost1994@51.250.80.98:/home/vyach_kost1994/react-mesto-api-full/frontend/build"
+    "predeploy": "npm run build"
   },
   "eslintConfig": {
     "extends": [

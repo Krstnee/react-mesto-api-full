@@ -1,6 +1,7 @@
 const allowedCors = [
-  'http://krstnee.nomoredomains.club',
   'https://krstnee.nomoredomains.club',
+  'http://krstnee.nomoredomains.club',
+  'http://localhost:3000',
   'http://krstne.nomoredomains.club',
   'https://krstne.nomoredomains.club',
 ];
